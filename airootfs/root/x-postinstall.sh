@@ -3,11 +3,13 @@ set -euo pipefail
 
 # ────────────────────────────────────────────────
 # x postinstall: Branding, Configs, DE Settings
+# Uses only packages/assets installed into /mnt.
+# No remote downloads.
 # ────────────────────────────────────────────────
 
 # 0) Verify /mnt
 if ! mountpoint -q /mnt; then
-  echo "[x] Error: /mnt is not mounted. Did archinstall finish successfully?"
+  echo "[x] Error: /mnt is not mounted. Did the installer finish successfully?"
   exit 1
 fi
 
@@ -18,39 +20,22 @@ in_chroot() {
   arch-chroot /mnt sh -c "$1"
 }
 
-# 1) System Identity (/etc/os-release)
-echo "[x] Configuring System Identity..."
-cat > /mnt/etc/os-release <<'EOF'
-NAME="X"
-PRETTY_NAME="X"
-ID=x
-ID_LIKE=arch
-BUILD_ID=rolling
-ANSI_COLOR="0;36"
-HOME_URL="https://xscriptor.io/x"
-DOCUMENTATION_URL="https://xscriptor.io/x/docs"
-SUPPORT_URL="https://xscriptor.io/x/support"
-BUG_REPORT_URL="https://github.com/xlnux/x"
-LOGO=x
-EOF
+# 1) System Identity (/etc/os-release) — handled by the x-release package
+#    (its post_install runs x-release-apply). Nothing to do here.
 
-# 2) Asset Installation
-echo "[x] Installing Assets..."
-ASSET_DIR="/root/x-assets"
+# 2) Asset paths (installed by the x-release package into the target)
 WALL="x-wallpaper.png"
+WALL_PATH="/usr/share/backgrounds/x/$WALL"
+ASSET_WALL="/mnt$WALL_PATH"
 
-# Icon
-install -d /mnt/usr/share/icons/hicolor/scalable/apps
-[ -f "$ASSET_DIR/icons/distributor-logo.svg" ] && install -m 0644 "$ASSET_DIR/icons/distributor-logo.svg" /mnt/usr/share/icons/hicolor/scalable/apps/
+if [ ! -f "$ASSET_WALL" ]; then
+  echo "[x] Warning: wallpaper not found at $ASSET_WALL (x-release not installed?)"
+fi
 
-# Wallpaper
-install -d /mnt/usr/share/backgrounds/x
-[ -f "$ASSET_DIR/backgrounds/$WALL" ] && install -m 0644 "$ASSET_DIR/backgrounds/$WALL" /mnt/usr/share/backgrounds/x/
-
-# GNOME Branding
+# 3) GNOME Branding
 if in_chroot "pacman -Qq gnome-shell" >/dev/null 2>&1 || [ -d /mnt/usr/share/gnome-shell ]; then
   echo "[x] Applying GNOME Branding..."
-  
+
   # Register wallpaper so it shows up in "Background" settings
   install -d /mnt/usr/share/gnome-background-properties
   cat > /mnt/usr/share/gnome-background-properties/x-wallpapers.xml <<EOF
@@ -59,7 +44,7 @@ if in_chroot "pacman -Qq gnome-shell" >/dev/null 2>&1 || [ -d /mnt/usr/share/gno
 <wallpapers>
   <wallpaper deleted="false">
     <name>x Default</name>
-    <filename>/usr/share/backgrounds/x/$WALL</filename>
+    <filename>$WALL_PATH</filename>
     <options>zoom</options>
     <pcolor>#000000</pcolor>
     <scolor>#000000</scolor>
@@ -71,14 +56,14 @@ EOF
   install -d /mnt/usr/share/glib-2.0/schemas
   cat > /mnt/usr/share/glib-2.0/schemas/99-x-branding.gschema.override <<EOF
 [org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/x/$WALL'
-picture-uri-dark='file:///usr/share/backgrounds/x/$WALL'
+picture-uri='file://$WALL_PATH'
+picture-uri-dark='file://$WALL_PATH'
 picture-options='zoom'
 primary-color='#000000'
 secondary-color='#000000'
 
 [org.gnome.login-screen]
-logo='/usr/share/icons/hicolor/scalable/apps/distributor-logo.svg'
+logo='/usr/share/pixmaps/x-logo.png'
 
 [org.gnome.desktop.interface]
 color-scheme='prefer-dark'
@@ -90,26 +75,26 @@ EOF
   fi
 fi
 
-# KDE Plasma Branding
+# 4) KDE Plasma Branding
 # Check for plasma-desktop package or plasma directory
 if in_chroot "pacman -Qq plasma-desktop" >/dev/null 2>&1 || [ -d /mnt/usr/share/plasma ]; then
   echo "[x] Applying KDE Plasma Branding..."
   install -d /mnt/etc/xdg
-  
+
   # Global wallpaper override
   cat > /mnt/etc/xdg/plasma-org.kde.plasma.desktop-appletsrc <<EOF
 [Containments][1][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/backgrounds/x/$WALL
+Image=file://$WALL_PATH
 EOF
 
   # Lock screen
   cat > /mnt/etc/xdg/kscreenlockerrc <<EOF
 [Greeter][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/backgrounds/x/$WALL
+Image=file://$WALL_PATH
 EOF
 fi
 
-# XFCE Branding
+# 5) XFCE Branding
 # Check for xfce4-session package or xfce4 directory
 if in_chroot "pacman -Qq xfce4-session" >/dev/null 2>&1 || [ -d /mnt/usr/share/xfce4 ]; then
   echo "[x] Applying XFCE Branding..."
@@ -123,7 +108,7 @@ if in_chroot "pacman -Qq xfce4-session" >/dev/null 2>&1 || [ -d /mnt/usr/share/x
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/backgrounds/x/$WALL"/>
+          <property name="last-image" type="string" value="$WALL_PATH"/>
         </property>
       </property>
     </property>
@@ -132,7 +117,7 @@ if in_chroot "pacman -Qq xfce4-session" >/dev/null 2>&1 || [ -d /mnt/usr/share/x
 EOF
 fi
 
-# 4) Display Manager Configuration
+# 6) Display Manager Configuration
 
 # SDDM (KDE default)
 if in_chroot "command -v sddm" >/dev/null 2>&1; then
@@ -142,8 +127,6 @@ if in_chroot "command -v sddm" >/dev/null 2>&1; then
 [Theme]
 Current=breeze
 EOF
-  # Note: SDDM themes are complex, but setting background requires editing the theme files or using a theme that supports overrides.
-  # We try to set the theme config if possible.
 fi
 
 # LightDM (XFCE default)
@@ -152,122 +135,16 @@ if in_chroot "command -v lightdm" >/dev/null 2>&1; then
   install -d /mnt/etc/lightdm
   cat > /mnt/etc/lightdm/lightdm-gtk-greeter.conf <<EOF
 [greeter]
-background=/usr/share/backgrounds/x/$WALL
+background=$WALL_PATH
 icon-theme-name=Adwaita
 font-name=Sans 10
 EOF
 fi
 
 # GDM (GNOME default)
-# GDM picks up the org.gnome.login-screen schema override we set earlier.
+# GDM picks up the org.gnome.login-screen schema override set above.
 
-# 5) Fetch and Apply Remote Configurations (SKEL)
-echo "[x] Fetching remote configurations (Skel)..."
-SKEL_SRC="/root/x-assets/skel/.config"
-TMPDIR="$(mktemp -d)"
-REMOTE_TARBALL="${x_REMOTE_SKEL_TARBALL:-https://codeload.github.com/xscriptor-colors/assets/tar.gz/refs/heads/main}"
-
-if command -v curl >/dev/null 2>&1; then
-  echo "[x] Downloading $REMOTE_TARBALL..."
-  if curl -fsSL "$REMOTE_TARBALL" -o "$TMPDIR/x-assets.tar.gz"; then
-    echo "[x] Extracting..."
-    tar -xzf "$TMPDIR/x-assets.tar.gz" -C "$TMPDIR"
-    
-    # Find the extracted folder (github adds repo-branch/ prefix)
-    REMOTE_ROOT="$(find "$TMPDIR" -maxdepth 2 -type d -name "x-assets-*" | head -n 1)"
-    
-    if [ -n "$REMOTE_ROOT" ] && [ -d "$REMOTE_ROOT/skel/.config" ]; then
-      SKEL_SRC="$REMOTE_ROOT/skel/.config"
-      echo "[x] Remote assets ready at $SKEL_SRC"
-    else
-      echo "[x] Warning: Could not find skel/.config in downloaded archive."
-    fi
-  else
-    echo "[x] Warning: Download failed. Using local assets."
-  fi
-else
-  echo "[x] Warning: curl not found."
-fi
-
-# Apply to /etc/skel (Future users)
-echo "[x] Applying to /etc/skel..."
-install -d /mnt/etc/skel/.config
-# Copy contents recursively
-cp -rT "$SKEL_SRC/" /mnt/etc/skel/.config/
-
-# Apply to existing users (created by archinstall)
-echo "[x] Applying to existing users..."
-for user_home in /mnt/home/*; do
-  [ -d "$user_home" ] || continue
-  user_name=$(basename "$user_home")
-  echo " -> $user_name"
-  
-  install -d "$user_home/.config"
-  cp -rT "$SKEL_SRC/" "$user_home/.config/"
-  
-  # Fix permissions
-  in_chroot "chown -R $user_name:$user_name /home/$user_name/.config"
-done
-
-# 6) GRUB & Bootloader Branding
-echo "[x] Configuring Bootloader Branding..."
-
-# Helper to rename entries
-rename_boot_entries() {
-  # systemd-boot
-  # Initial rename
-  for d in /mnt/boot/loader/entries /mnt/efi/loader/entries; do
-    if [ -d "$d" ]; then
-      for f in "$d"/*.conf; do
-        [ -f "$f" ] && sed -i 's/Arch Linux/X/g' "$f" || true
-      done
-    fi
-  done
-  
-  # GRUB
-  if [ -f /mnt/etc/default/grub ]; then
-    sed -i '/^GRUB_DISTRIBUTOR=/d' /mnt/etc/default/grub
-    echo 'GRUB_DISTRIBUTOR="X"' >> /mnt/etc/default/grub
-    
-    # Verbose boot
-    sed -i '/^GRUB_CMDLINE_LINUX_DEFAULT=/d' /mnt/etc/default/grub
-    echo 'GRUB_CMDLINE_LINUX_DEFAULT="loglevel=7 systemd.show_status=1 rd.udev.log_priority=debug"' >> /mnt/etc/default/grub
-    
-    # Rebuild GRUB
-    if in_chroot "command -v grub-mkconfig" >/dev/null 2>&1; then
-      in_chroot "grub-mkconfig -o /boot/grub/grub.cfg"
-    fi
-  fi
-
-
-}
-
-
-rename_boot_entries
-
-# 7) Base Packages & Services
-echo "[x] Installing additional tools..."
-in_chroot "pacman -S --noconfirm --needed \
-  git \
-  wget \
-  curl \
-  helix \
-  ptyxis \
-  zellij \
-  yazi \
-  nodejs \
-  zsh \
-  docker \
-  docker-compose \
-  base-devel \
-  obsidian \
-  code \
-  || true"
-
-echo "[x] Enabling docker service..."
-in_chroot "systemctl enable docker.service || true"
-
-# 8) First Boot Service (Cleanup & Post-Install Script)
+# 8) First Boot Service (runs local x-dev-env, no remote downloads)
 echo "[x] Setting up first-boot terminal hook..."
 
 # 8.1 Create the script that runs on first terminal launch
@@ -301,11 +178,10 @@ if [ -f "$WALL" ]; then
         *XFCE*)
             if command -v xfconf-query >/dev/null 2>&1; then
                 echo "→ Applying XFCE Wallpaper..."
-                # Set for all connected monitors on the default channel
-                for property in $(xfconf-query -c xfce4-desktop -l | grep "last-image"); do
+                for property in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep "last-image"); do
                     xfconf-query -c xfce4-desktop -p "$property" -s "$WALL" || true
                 done
-                for property in $(xfconf-query -c xfce4-desktop -l | grep "image-path"); do
+                for property in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep "image-path"); do
                     xfconf-query -c xfce4-desktop -p "$property" -s "$WALL" || true
                 done
             fi
@@ -313,26 +189,12 @@ if [ -f "$WALL" ]; then
     esac
 fi
 
-# Wait for internet connection
-printf "Waiting for internet connection..."
-i=0
-while ! ping -c 1 -W 1 8.8.8.8 >/dev/null 2>&1; do
-    sleep 1
-    i=$((i+1))
-    [ "$i" -ge 30 ] && break
-done
-echo " Done."
-
-cd "$HOME" 2>/dev/null || cd /tmp
-
-# Download and run the post-reboot script (x.sh)
-TARGET_SCRIPT="https://raw.githubusercontent.com/xlnux/x/main/x.sh"
-if curl -sLO "$TARGET_SCRIPT"; then
-    chmod +x x.sh
-    echo "→ Running post-install script (x.sh)..."
-    ./x.sh || echo "Warning: x.sh returned error status."
+# Run the local X development environment setup (installed by the x-dev package).
+if command -v x-dev-env >/dev/null 2>&1; then
+    echo "→ Running local post-install setup (x-dev-env)..."
+    x-dev-env || echo "Warning: x-dev-env returned error status."
 else
-    echo "Error: Failed to download x.sh"
+    echo "x-dev-env not found. Install the x-dev package to complete setup."
 fi
 
 # Mark as done so it doesn't run again
@@ -366,11 +228,11 @@ NoDisplay=false
 X-GNOME-Autostart-enabled=true
 EOF
 
-# 8.3 Apply to existing users (created by archinstall)
+# 8.3 Apply to existing users (created by the installer)
 for user_home in /mnt/home/*; do
   [ -d "$user_home" ] || continue
   user_name=$(basename "$user_home")
-  
+
   install -d "$user_home/.config/autostart"
   cp /mnt/etc/skel/.config/autostart/x-firstboot.desktop "$user_home/.config/autostart/"
   chown -R "$user_name:$user_name" "$user_home/.config/autostart"

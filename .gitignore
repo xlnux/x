@@ -77,13 +77,7 @@ Thumbs.db
 desktop.ini
 
 # ── Exclusiones específicas de x ───────────────
-# Todo lo de rebranding se mantiene
-!root/x-assets/**
-!root/x-assets/**/*.sh
-!root/x-assets/**/*.svg
-!root/x-assets/**/*.png
-!root/x-assets/**/*.conf
-!root/x-assets/**/*.service
+# Los assets de branding viven en x-repo (paquete x-release)
 
 # Archivos del perfil ArchISO
 !profiledef.sh

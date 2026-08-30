@@ -7,7 +7,7 @@ if [ -x /root/.automated_script.sh ]; then
     /root/.automated_script.sh
 fi
 
-# Run x Autostart (Fallback/Default)
-if [ -f /root/x-autostart.sh ]; then
-    bash /root/x-autostart.sh
+# Run X live session (graphical installer)
+if [ -x /usr/bin/x-live-session ]; then
+    bash /usr/bin/x-live-session
 fi
