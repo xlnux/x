@@ -3,7 +3,7 @@
 
 iso_name="x"
 iso_label="x_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
-iso_publisher="Xscriptor <https://dev.xscriptor.com/x>"
+iso_publisher="Xscriptor <https://xscriptor.io/x>"
 iso_application="X Live/Rescue DVD"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"

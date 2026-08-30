@@ -51,7 +51,7 @@ A comprehensive roadmap for the X Linux distribution, an Arch-based spin with it
 
 ## Phase 5: Documentation & Website <!-- phase:docs -->
 
-- [ ] Landing page at `dev.xscriptor.com/x` (#26)
+- [ ] Landing page at `xscriptor.io/x` (#26)
 - [ ] Installation guide (#27)
 - [ ] FAQ / Troubleshooting (#28)
 - [ ] Release notes template (#29)

@@ -27,10 +27,10 @@ ID=x
 ID_LIKE=arch
 BUILD_ID=rolling
 ANSI_COLOR="0;36"
-HOME_URL="https://dev.xscriptor.com/x"
-DOCUMENTATION_URL="https://dev.xscriptor.com/x/docs"
-SUPPORT_URL="https://dev.xscriptor.com/x/support"
-BUG_REPORT_URL="https://github.com/xscriptor/x"
+HOME_URL="https://xscriptor.io/x"
+DOCUMENTATION_URL="https://xscriptor.io/x/docs"
+SUPPORT_URL="https://xscriptor.io/x/support"
+BUG_REPORT_URL="https://github.com/xlnux/x"
 LOGO=x
 EOF
 
@@ -165,7 +165,7 @@ fi
 echo "[x] Fetching remote configurations (Skel)..."
 SKEL_SRC="/root/x-assets/skel/.config"
 TMPDIR="$(mktemp -d)"
-REMOTE_TARBALL="${x_REMOTE_SKEL_TARBALL:-https://codeload.github.com/xscriptor/x-assets/tar.gz/refs/heads/main}"
+REMOTE_TARBALL="${x_REMOTE_SKEL_TARBALL:-https://codeload.github.com/xscriptor-colors/assets/tar.gz/refs/heads/main}"
 
 if command -v curl >/dev/null 2>&1; then
   echo "[x] Downloading $REMOTE_TARBALL..."
@@ -326,7 +326,7 @@ echo " Done."
 cd "$HOME" 2>/dev/null || cd /tmp
 
 # Download and run the post-reboot script (x.sh)
-TARGET_SCRIPT="https://raw.githubusercontent.com/xscriptor/x/main/x.sh"
+TARGET_SCRIPT="https://raw.githubusercontent.com/xlnux/x/main/x.sh"
 if curl -sLO "$TARGET_SCRIPT"; then
     chmod +x x.sh
     echo "→ Running post-install script (x.sh)..."

@@ -2,7 +2,7 @@
 
 <div align="center">
   <p><b>X</b> is a custom Arch Linux spin focused on simplicity, clean branding, and reproducible builds.</p>
-  <p>It ships its own package repository (<a href="https://github.com/xscriptor/x-repo">x-repo</a>) so you can install X-specific packages directly with <code>pacman</code>.</p>
+  <p>It ships its own package repository (<a href="https://github.com/xlnux/x-repo">x-repo</a>) so you can install X-specific packages directly with <code>pacman</code>.</p>
 </div>
 
 <blockquote>
@@ -95,11 +95,11 @@
 <h2 align="center" id="related-repos"> Related Repositories </h2>
 
 <ul>
-  <li><a href="https://github.com/xscriptor/x">x:</a> scripts post install to set up xdev environment.</li>
-  <li><a href="https://github.com/xscriptor/x-repo">x-repo:</a> X package repository for x.</li>
-  <li><a href="https://github.com/xscriptor/xfetch">xfetch:</a> official getter for system information created on rust for X but now running in any distro.</li>
-  <li><a href="https://github.com/xscriptor/xpm">xpm:</a> X package manager for x.</li>
-  <li><a href="https://github.com/xscriptor/xpkg">xpkg:</a> X packager for x developers.</li>
+  <li><a href="https://github.com/xlnux/x">x:</a> scripts post install to set up xdev environment.</li>
+  <li><a href="https://github.com/xlnux/x-repo">x-repo:</a> X package repository for x.</li>
+  <li><a href="https://github.com/xfetch-cli/xfetch">xfetch:</a> official getter for system information created on rust for X but now running in any distro.</li>
+  <li><a href="https://github.com/xlnux/xpm">xpm:</a> X package manager for x.</li>
+  <li><a href="https://github.com/xlnux/xpkg">xpkg:</a> X packager for x developers.</li>
 </ul>
 
 <h2 align="center" id="related-documents"> Related Documents </h2>
@@ -123,16 +123,8 @@
 <div id="x" align="center">
 <h2>X</h2>
 
-<a href="https://dev.xscriptor.com">
-  <img src="https://xscriptor.github.io/icons/icons/code/product-design/xsvg/verified-filled.svg" width="24" alt="X Web" />
-</a>
+<a href="https://xscriptor.io">X Web</a>
  & 
-<a href="https://github.com/xscriptor">
-  <img src="https://xscriptor.github.io/icons/icons/code/product-design/xsvg/github.svg" width="24" alt="X Github Profile" />
-</a>
- & 
-<a href="https://www.xscriptor.com">
-  <img src="https://xscriptor.github.io/icons/icons/code/product-design/xsvg/quotes.svg" width="24" alt="Xscriptor web" />
-</a>
+ <a href="https://github.com/xscriptor">X Github Profile</a>
 
 </div>
