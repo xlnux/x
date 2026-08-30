@@ -15,8 +15,8 @@ script_cmdline() {
 automated_script() {
     local script rt
     script="$(script_cmdline)"
-    if [[ -z "${script}" && -x /root/x-autostart.sh ]]; then
-        script="/root/x-autostart.sh"
+    if [[ -z "${script}" && -x /usr/bin/x-live-session ]]; then
+        script="/usr/bin/x-live-session"
     fi
     if [[ -n "${script}" && ! -x /tmp/startup_script ]]; then
         if [[ "${script}" =~ ^((http|https|ftp|tftp)://) ]]; then

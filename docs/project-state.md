@@ -21,11 +21,9 @@ This document summarizes the current state of the X Linux project based on repos
 
 ### Installation and Automation
 
-- Preconfigured Archinstall files are included in `airootfs/etc/archinstall/` and `airootfs/root/`.
-- Automated/post-install scripts are available:
-  - `airootfs/root/x-autostart.sh`
-  - `airootfs/root/x-postinstall.sh`
-  - `airootfs/root/customize_airootfs.sh`
+- Calamares graphical installer configuration is provided by the `x-calamares-config` package.
+- Live graphical session (`x-live-session`) boots to openbox with an "Install X" desktop icon.
+- Post-install automation lives in `airootfs/root/x-postinstall.sh`.
 
 ### Build Tooling
 

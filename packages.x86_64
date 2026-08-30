@@ -144,7 +144,11 @@ ttf-dejavu
 ttf-liberation
 ttf-opensans
 
-archinstall
+## Live graphical installer (Calamares)
+calamares
+x-calamares-config
 
 ## X
 x-release
+x-dev
+x-live-session

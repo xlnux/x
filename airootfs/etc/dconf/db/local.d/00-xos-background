@@ -1,6 +1,6 @@
 [org/gnome/desktop/background]
-picture-uri='file:///usr/local/share/backgrounds/x/x-wallpaper.png'
-picture-uri-dark='file:///usr/local/share/backgrounds/x/x-wallpaper.png'
+picture-uri='file:///usr/share/backgrounds/x/x-wallpaper.png'
+picture-uri-dark='file:///usr/share/backgrounds/x/x-wallpaper.png'
 picture-options='zoom'
 color-shading-type='solid'
 primary-color='#000000'

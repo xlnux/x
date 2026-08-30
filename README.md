@@ -39,7 +39,7 @@
 <ul>
   <li><b>Custom branding</b> — Identity applied to <code>/etc/os-release</code>, GRUB, MOTD, and wallpapers.</li>
   <li><b>X package repository</b> — Dedicated <code>[x]</code> repo in <code>pacman.conf</code> for branding and tools.</li>
-  <li><b>Preconfigured archinstall</b> — Ships with predefined configuration files for streamlined installation.</li>
+  <li><b>Graphical installer</b> — Calamares with X branding, offline install via embedded system image.</li>
   <li><b>Post-install automation</b> — Scripts to apply branding and setup tasks after installation.</li>
   <li><b>WSL support</b> — Tools to build a WSL-importable root filesystem tarball.</li>
 </ul>

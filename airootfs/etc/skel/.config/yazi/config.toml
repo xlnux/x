@@ -1,9 +1,0 @@
-[opener]
-edit = [{ run = 'hx "$@"', desc = "Open in Helix", block = true }]
-
-[open]
-rules = [
-  { mime = "text/*", use = "edit" },
-  { name = "*.toml",  use = "edit" },
-  { name = "*.md",    use = "edit" }
-]
