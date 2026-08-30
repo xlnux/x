@@ -45,7 +45,7 @@
   "custom_commands": [
     "systemctl enable gdm.service",
     "systemctl enable NetworkManager.service",
-    "printf 'NAME=\"X\"\\nPRETTY_NAME=\"X\"\\nID=x\\nID_LIKE=arch\\nBUILD_ID=rolling\\nANSI_COLOR=\"0;36\"\\nHOME_URL=\"https://dev.xscriptor.com/x\"\\nDOCUMENTATION_URL=\"https://dev.xscriptor.com/x/docs\"\\nSUPPORT_URL=\"https://dev.xscriptor.com/x/support\"\\nBUG_REPORT_URL=\"https://github.com/xscriptor/x\"\\nLOGO=x\\n' > /etc/os-release",
+    "printf 'NAME=\"X\"\\nPRETTY_NAME=\"X\"\\nID=x\\nID_LIKE=arch\\nBUILD_ID=rolling\\nANSI_COLOR=\"0;36\"\\nHOME_URL=\"https://xscriptor.io/x\"\\nDOCUMENTATION_URL=\"https://xscriptor.io/x/docs\"\\nSUPPORT_URL=\"https://xscriptor.io/x/support\"\\nBUG_REPORT_URL=\"https://github.com/xlnux/x\"\\nLOGO=x\\n' > /etc/os-release",
     "sed -i 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR=\"X\"/' /etc/default/grub || echo 'GRUB_DISTRIBUTOR=\"X\"' >> /etc/default/grub",
     "for f in /boot/loader/entries/*.conf /efi/loader/entries/*.conf; do [ -f \"$f\" ] && sed -i 's/Arch Linux/X/g' \"$f\"; done || true",
     "grub-mkconfig -o /boot/grub/grub.cfg || true"

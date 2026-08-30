@@ -21,7 +21,7 @@
         "custom_repositories": [
             {
                 "name": "x",
-                "url": "https://xscriptor.github.io/x-repo/repo/x86_64",
+                "url": "https://xlnux.github.io/x-repo/repo/x86_64",
                 "sign_check": "Optional",
                 "sign_option": "TrustAll"
             }

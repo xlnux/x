@@ -9,7 +9,7 @@ The repository is declared in `pacman.conf`:
 ```ini
 [x]
 SigLevel = Optional TrustAll
-Server = https://xscriptor.github.io/x-repo/repo/x86_64
+Server = https://xlnux.github.io/x-repo/repo/x86_64
 ```
 
 ## Usage in This Project

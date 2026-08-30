@@ -8,4 +8,4 @@ Target = filesystem
 Description = Reescribiendo identidad x en os-release...
 When = PostTransaction
 # Usamos printf para escribir el archivo completo de cero. Es más seguro.
-Exec = /bin/sh -c "printf 'NAME=\"X\"\nPRETTY_NAME=\"X\"\nID=x\nID_LIKE=arch\nBUILD_ID=rolling\nANSI_COLOR=\"0;36\"\nHOME_URL=\"https://dev.xscriptor.com/x\"\nDOCUMENTATION_URL=\"https://dev.xscriptor.com/x/docs\"\nSUPPORT_URL=\"https://dev.xscriptor.com/x/support\"\nBUG_REPORT_URL=\"https://github.com/xscriptor/x\"\nLOGO=x\n' > /etc/os-release"
+Exec = /bin/sh -c "printf 'NAME=\"X\"\nPRETTY_NAME=\"X\"\nID=x\nID_LIKE=arch\nBUILD_ID=rolling\nANSI_COLOR=\"0;36\"\nHOME_URL=\"https://xscriptor.io/x\"\nDOCUMENTATION_URL=\"https://xscriptor.io/x/docs\"\nSUPPORT_URL=\"https://xscriptor.io/x/support\"\nBUG_REPORT_URL=\"https://github.com/xlnux/x\"\nLOGO=x\n' > /etc/os-release"
