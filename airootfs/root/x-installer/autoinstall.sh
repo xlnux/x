@@ -7,7 +7,7 @@ set -euo pipefail
 # Corre como servicio systemd (x-autoinstall.service) en el live.
 
 dbg() {
-    printf 'autoinstall: %s\n' "$*" >/dev/console 2>/dev/null || true
+    printf 'autoinstall: %s\n' "$*" >/dev/ttyS0 2>/dev/null || printf 'autoinstall: %s\n' "$*" >/dev/console 2>/dev/null || true
 }
 
 dbg "cmdline: $(cat /proc/cmdline)"
@@ -43,7 +43,7 @@ if [[ ! -f "$JSON" ]]; then
 fi
 
 dbg "instalacion desatendida desde $DEV"
-{ X_INSTALL_JSON="$JSON" bash -x /root/x-installer/install.sh; } 2>&1 | tee /dev/console || true
+{ X_INSTALL_JSON="$JSON" bash -x /root/x-installer/install.sh; } 2>&1 | tee /dev/ttyS0 >/dev/null || true
 rc=${PIPESTATUS[0]}
 dbg "install.sh rc=$rc"
 umount "$CIMNT"
