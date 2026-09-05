@@ -1,0 +1,13 @@
+[Unit]
+Description=x unattended installer (cidata)
+ConditionPathExists=/root/x-installer/autoinstall.sh
+After=systemd-udevd.service
+
+[Service]
+Type=oneshot
+ExecStart=/root/x-installer/autoinstall.sh
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target
