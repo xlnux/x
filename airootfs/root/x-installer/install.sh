@@ -85,6 +85,16 @@ done
 echo "== pacstrap (online; repos oficiales + [x])"
 pacstrap -K "$MNT" $PKGS
 
+echo "== instalando x-scripts (payload del live, offline)"
+XS_PKG="$(ls /root/x-installer/packages/x-scripts-*.pkg.tar.zst 2>/dev/null | head -1 || true)"
+if [[ -n "$XS_PKG" ]]; then
+    cp -f "$XS_PKG" "$MNT/root/"
+    arch-chroot "$MNT" pacman -U --noconfirm "/root/$(basename "$XS_PKG")" >/dev/null
+    rm -f "$MNT/root/$(basename "$XS_PKG")"
+else
+    echo "aviso: no se encontro x-scripts en el live" >&2
+fi
+
 echo "== configuración base"
 genfstab -U "$MNT" >> "$MNT/etc/fstab"
 
@@ -103,7 +113,8 @@ arch-chroot "$MNT" env X_HW_AUTO=0 x setup
 arch-chroot "$MNT" runuser -u "$USER" -- env X_HYPRLAND=0 X_HW_AUTO=0 /usr/bin/x setup --user
 
 echo "== bootloader"
-arch-chroot "$MNT" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=x --recheck
+arch-chroot "$MNT" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=x --no-nvram --recheck
+arch-chroot "$MNT" grub-install --target=i386-pc --boot-directory=/boot "$DISK"
 arch-chroot "$MNT" grub-mkconfig -o /boot/grub/grub.cfg
 if [[ -x "$MNT/usr/bin/x-release-apply" ]]; then
     arch-chroot "$MNT" /usr/bin/x-release-apply || true

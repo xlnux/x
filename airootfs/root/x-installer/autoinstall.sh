@@ -43,8 +43,12 @@ if [[ ! -f "$JSON" ]]; then
 fi
 
 dbg "instalacion desatendida desde $DEV"
-{ X_INSTALL_JSON="$JSON" bash -x /root/x-installer/install.sh; } 2>&1 | tee /dev/ttyS0 >/dev/null || true
-rc=${PIPESTATUS[0]}
+LOG=/tmp/x-install.log
+set +e
+X_INSTALL_JSON="$JSON" bash -x /root/x-installer/install.sh >"$LOG" 2>&1
+rc=$?
+set -e
+cat "$LOG" >/dev/ttyS0 2>/dev/null || true
 dbg "install.sh rc=$rc"
 umount "$CIMNT"
 exit "$rc"
