@@ -26,7 +26,7 @@
   <li>Confirm you are building with the latest <code>archiso</code> and the newest commits from this repository.</li>
   <li>If the issue is in an installed system, confirm your <code>x-release</code> package is up to date.</li>
   <li>Include your <b>Hardware specs</b> and whether you are testing on <b>Bare Metal</b> or a <b>Virtual Machine</b>.</li>
-  <li>Provide the build logs or <code>archinstall</code> logs if the installation failed.</li>
+  <li>Provide the build logs or installation logs if the setup failed.</li>
 </ul>
 
 <h2 align="center" id="response-expectations"> Response Expectations </h2>

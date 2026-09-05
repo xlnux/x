@@ -21,8 +21,10 @@ This document summarizes the current state of the X Linux project based on repos
 
 ### Installation and Automation
 
-- Calamares graphical installer configuration is provided by the `x-calamares-config` package.
-- Live graphical session (`x-live-session`) boots to openbox with an "Install X" desktop icon.
+- Calamares was removed; the live ISO no longer ships a graphical installer or the
+  `x-calamares-config`/`x-live-session` packages.
+- Installation and provisioning are being reworked around scripts (see the reboot
+  roadmap in the workspace root).
 - Post-install automation lives in `airootfs/root/x-postinstall.sh`.
 
 ### Build Tooling

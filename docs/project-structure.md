@@ -26,7 +26,7 @@ x-linux/
 `airootfs/` is the most important directory in the project. Its content is overlaid into the target filesystem during image/rootfs builds.
 
 - `airootfs/etc/`: system-level configuration and branding.
-- `airootfs/root/`: automation scripts and Archinstall-related files.
+- `airootfs/root/`: automation scripts (live/install hooks).
 - `airootfs/usr/local/bin/`: helper scripts available in the live environment.
 - `airootfs/usr/local/share/`: branding assets (wallpapers, images, sound templates).
 

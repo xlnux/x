@@ -1,7 +1,6 @@
 alsa-utils
 amd-ucode
 arch-install-scripts
-archinstall
 b43-fwcutter
 base
 bcachefs-tools
@@ -144,11 +143,6 @@ ttf-dejavu
 ttf-liberation
 ttf-opensans
 
-## Live graphical installer (Calamares)
-calamares
-x-calamares-config
-
 ## X
 x-release
 x-dev
-x-live-session
