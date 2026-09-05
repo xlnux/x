@@ -44,14 +44,15 @@ partdev() {
     fi
 }
 
-EFI="$(partdev "$DISK")1"
-ROOTP="$(partdev "$DISK")2"
+BIOSP="$(partdev "$DISK")1"
+EFI="$(partdev "$DISK")2"
+ROOTP="$(partdev "$DISK")3"
 MNT=/mnt
 PKGLIST="${X_PKGLIST:-/run/archiso/packages.x86_64}"
 
 echo "== particionando $DISK"
 sgdisk --zap-all "$DISK"
-sgdisk -n 1:0:+512M -t 1:ef00 -n 2:0:0 -t 2:8300 "$DISK"
+sgdisk -n 1:0:+1M -t 1:ef02 -n 2:0:+512M -t 2:ef00 -n 3:0:0 -t 3:8300 "$DISK"
 partprobe "$DISK" || true
 sleep 1
 
@@ -113,7 +114,7 @@ arch-chroot "$MNT" env X_HW_AUTO=0 x setup
 arch-chroot "$MNT" runuser -u "$USER" -- env X_HYPRLAND=0 X_HW_AUTO=0 /usr/bin/x setup --user
 
 echo "== bootloader"
-arch-chroot "$MNT" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=x --no-nvram --recheck
+arch-chroot "$MNT" grub-install --target=x86_64-efi --efi-directory=/boot --removable --recheck
 arch-chroot "$MNT" grub-install --target=i386-pc --boot-directory=/boot "$DISK"
 arch-chroot "$MNT" grub-mkconfig -o /boot/grub/grub.cfg
 if [[ -x "$MNT/usr/bin/x-release-apply" ]]; then
