@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Configurador en texto del instalador x. Recolecta la configuracion minima y
-# escribe /tmp/x-install.json para install.sh.
-#   X_CONFIG_OUT  ruta de salida (default /tmp/x-install.json)
+# Text configurator for the x installer. Collects the minimal configuration and
+# writes /tmp/x-install.json for install.sh.
+#   X_CONFIG_OUT  output path (default /tmp/x-install.json)
 
 source "$(dirname "${BASH_SOURCE[0]}")/ui.sh"
 
@@ -13,16 +13,16 @@ DRY="${X_DRY:-0}"
 valid_hostname() { [[ "$1" =~ ^[a-zA-Z0-9][a-zA-Z0-9-]{0,62}$ ]]; }
 valid_user() { [[ "$1" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; }
 
-# Dispositivos de bloque de tipo disk.
+# Block devices of type disk.
 mapfile -t DISKS < <(lsblk -dno NAME,SIZE,TYPE 2>/dev/null | awk '$3=="disk" {print "/dev/"$1" ("$2")"}')
 
 DISK=""
 while [[ -z "$DISK" ]]; do
     if (( ${#DISKS[@]} == 0 )); then
-        echo "configurador: no se encontraron discos" >&2
+        echo "configurator: no disks found" >&2
         exit 1
     fi
-    select_one DISK "Selecciona el disco de instalacion" "${DISKS[@]}"
+    select_one DISK "Select the installation disk" "${DISKS[@]}"
     DISK="${DISK%% *}"
 done
 
@@ -30,21 +30,21 @@ HOST=""
 while [[ -z "$HOST" ]]; do
     ask_value HOST "Hostname (default: x)"
     HOST="${HOST:-x}"
-    valid_hostname "$HOST" || { echo "hostname invalido"; HOST=""; }
+    valid_hostname "$HOST" || { echo "invalid hostname"; HOST=""; }
 done
 
 USER=""
 while [[ -z "$USER" ]]; do
-    ask_value USER "Usuario"
-    valid_user "$USER" || { echo "usuario invalido"; USER=""; }
+    ask_value USER "User"
+    valid_user "$USER" || { echo "invalid user"; USER=""; }
 done
 
 PASS=""
 PASS2="x"
 while [[ -z "$PASS" || "$PASS" != "$PASS2" ]]; do
-    ask_password PASS "Contrasena del usuario"
-    ask_password PASS2 "Repite la contrasena"
-    [[ -n "$PASS" && "$PASS" == "$PASS2" ]] || echo "no coinciden o esta vacia"
+    ask_password PASS "User password"
+    ask_password PASS2 "Repeat the password"
+    [[ -n "$PASS" && "$PASS" == "$PASS2" ]] || echo "passwords do not match or are empty"
 done
 
 if [[ "$DRY" == "1" ]]; then
@@ -52,14 +52,14 @@ if [[ "$DRY" == "1" ]]; then
     exit 0
 fi
 
-if confirm_yes "ATENCION: se borrara todo el contenido de $DISK. Continuar?"; then
+if confirm_yes "WARNING: all content on $DISK will be erased. Continue?"; then
     :
 else
-    echo "configurador: cancelado, se abandona a una shell"
+    echo "configurator: cancelled, dropping to a shell"
     exit 1
 fi
 
 cat > "$OUT" <<EOF
 {"disk":"$DISK","hostname":"$HOST","username":"$USER","password":"$PASS"}
 EOF
-echo "configuracion escrita en $OUT"
+echo "configuration written to $OUT"

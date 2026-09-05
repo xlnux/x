@@ -7,7 +7,7 @@ if [ -x /root/.automated_script.sh ]; then
     /root/.automated_script.sh
 fi
 
-# Instalador x (texto) cuando no hay automatizacion via script= o xauto=1.
+# X installer (text) when there is no automation via script= or xauto=1.
 if [ "$(tty)" = "/dev/tty1" ] && ! grep -Fqa 'script=' /proc/cmdline && ! grep -Fqa 'xauto=1' /proc/cmdline; then
     if [ -x /root/x-installer/installer.sh ]; then
         bash /root/x-installer/installer.sh

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Autoinstalacion desatendida. Se activa SOLO si el cmdline lleva xauto=1 y
-# existe un disco con etiqueta cidata que contenga x-install.json.
+# Unattended autoinstall. It activates ONLY if the cmdline carries xauto=1 and
+# a disk labeled cidata containing x-install.json exists.
 #   /dev/disk/by-label/cidata  ->  x-install.json  ({"disk":"/dev/vda", ...})
-# Corre como servicio systemd (x-autoinstall.service) en el live.
+# Runs as a systemd service (x-autoinstall.service) in the live environment.
 
 dbg() {
     printf 'autoinstall: %s\n' "$*" >/dev/ttyS0 2>/dev/null || printf 'autoinstall: %s\n' "$*" >/dev/console 2>/dev/null || true
@@ -13,7 +13,7 @@ dbg() {
 dbg "cmdline: $(cat /proc/cmdline)"
 
 grep -Fqa 'xauto=1' /proc/cmdline || {
-    dbg "sin xauto=1; se omite"
+    dbg "no xauto=1; skipping"
     exit 0
 }
 
@@ -23,26 +23,26 @@ CIMNT=/run/cidata
 mkdir -p "$CIMNT"
 
 DEV="$(blkid -L cidata 2>/dev/null || true)"
-dbg "cidata dev: ${DEV:-ninguno}"
+dbg "cidata dev: ${DEV:-none}"
 
 if [[ -z "$DEV" ]]; then
-    dbg "sin disco cidata; se omite"
+    dbg "no cidata disk; skipping"
     exit 0
 fi
 
 if ! mount -o ro "$DEV" "$CIMNT"; then
-    dbg "no se pudo montar cidata en $CIMNT"
+    dbg "could not mount cidata at $CIMNT"
     exit 0
 fi
 
 JSON="$CIMNT/x-install.json"
 if [[ ! -f "$JSON" ]]; then
-    dbg "falta x-install.json en cidata; se omite"
+    dbg "x-install.json missing on cidata; skipping"
     umount "$CIMNT"
     exit 0
 fi
 
-dbg "instalacion desatendida desde $DEV"
+dbg "unattended install from $DEV"
 LOG=/tmp/x-install.log
 set +e
 X_INSTALL_JSON="$JSON" bash -x /root/x-installer/install.sh >"$LOG" 2>&1

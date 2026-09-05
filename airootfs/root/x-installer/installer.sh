@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Entry del instalador x en el live. Ejecuta el configurador y, si se
-# confirma, el instalador. Con X_DRY=1 solo muestra el plan.
-#   X_SKIP_INSTALLER=1  salta el instalador (util en dev/tests)
+# x installer entry point in the live environment. Runs the configurator and, if
+# confirmed, the installer. With X_DRY=1 it only shows the plan.
+#   X_SKIP_INSTALLER=1  skips the installer (useful in dev/tests)
 
 if [[ "${X_SKIP_INSTALLER:-0}" == "1" ]]; then
-    echo "x-install: omitido"
+    echo "x-install: skipped"
     exit 0
 fi
 
@@ -19,6 +19,6 @@ if [[ "${X_DRY:-0}" == "1" ]]; then
     exit 0
 fi
 
-echo "== Instalador x =="
+echo "== X Installer =="
 bash "$DIR/configurator.sh" || exit 1
 bash "$DIR/install.sh"

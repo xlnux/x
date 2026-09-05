@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# UI del instalador x: usa gum si esta disponible y cae a prompts de texto
-# simples en caso contrario (TTY sin gum o tests no interactivos).
+# UI for the x installer: uses gum if available and falls back to plain text
+# prompts otherwise (TTY without gum or non-interactive tests).
 
 have_gum() {
     command -v gum >/dev/null 2>&1
@@ -42,7 +42,7 @@ select_one() {
         for i in "${!items[@]}"; do
             printf '  %d) %s\n' "$((i + 1))" "${items[$i]}"
         done
-        printf 'elige (1-%d): ' "${#items[@]}"
+        printf 'choose (1-%d): ' "${#items[@]}"
         IFS= read -r sel
         sel="${sel:-1}"
         if [[ "$sel" =~ ^[0-9]+$ ]] && (( sel >= 1 && sel <= ${#items[@]} )); then
