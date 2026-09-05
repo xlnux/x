@@ -6,31 +6,45 @@ set -euo pipefail
 #   /dev/disk/by-label/cidata  ->  x-install.json  ({"disk":"/dev/vda", ...})
 # Corre como servicio systemd (x-autoinstall.service) en el live.
 
-grep -Fqa 'xauto=1' /proc/cmdline || exit 0
+dbg() {
+    printf 'autoinstall: %s\n' "$*" >/dev/console 2>/dev/null || true
+}
+
+dbg "cmdline: $(cat /proc/cmdline)"
+
+grep -Fqa 'xauto=1' /proc/cmdline || {
+    dbg "sin xauto=1; se omite"
+    exit 0
+}
+
+udevadm settle || true
 
 CIMNT=/run/cidata
 mkdir -p "$CIMNT"
 
 DEV="$(blkid -L cidata 2>/dev/null || true)"
+dbg "cidata dev: ${DEV:-ninguno}"
+
 if [[ -z "$DEV" ]]; then
-    echo "x-autoinstall: sin disco cidata; se omite"
+    dbg "sin disco cidata; se omite"
     exit 0
 fi
 
-mount -o ro "$DEV" "$CIMNT" || {
-    echo "x-autoinstall: no se pudo montar cidata" >&2
+if ! mount -o ro "$DEV" "$CIMNT"; then
+    dbg "no se pudo montar cidata en $CIMNT"
     exit 0
-}
+fi
 
 JSON="$CIMNT/x-install.json"
 if [[ ! -f "$JSON" ]]; then
-    echo "x-autoinstall: falta x-install.json en cidata; se omite"
+    dbg "falta x-install.json en cidata; se omite"
     umount "$CIMNT"
     exit 0
 fi
 
-echo "x-autoinstall: instalacion desatendida desde $DEV"
-X_INSTALL_JSON="$JSON" bash /root/x-installer/install.sh
-rc=$?
+dbg "instalacion desatendida desde $DEV"
+{ X_INSTALL_JSON="$JSON" bash -x /root/x-installer/install.sh; } 2>&1 | tee /dev/console || true
+rc=${PIPESTATUS[0]}
+dbg "install.sh rc=$rc"
 umount "$CIMNT"
-exit $rc
+exit "$rc"
