@@ -64,10 +64,23 @@ mount "$ROOTP" "$MNT"
 mkdir -p "$MNT/boot"
 mount "$EFI" "$MNT/boot"
 
-PKGS="base base-devel linux linux-firmware grub efibootmgr sudo git jq gum"
+PKGS="base base-devel linux linux-firmware grub efibootmgr sudo git jq gum networkmanager"
 if [[ -f "$PKGLIST" ]]; then
     PKGS="$PKGS $(sed 's/#.*//' "$PKGLIST" | tr '\n' ' ')"
 fi
+
+# Espera a que haya red antes del pacstrap (dhcp del live).
+echo "== esperando red"
+for i in $(seq 1 60); do
+    if getent ahostsv4 geo.mirror.pkgbuild.com >/dev/null 2>&1; then
+        echo "red disponible"
+        break
+    fi
+    if [[ "$i" -eq 60 ]]; then
+        echo "aviso: sin red tras 120s; pacstrap fallara" >&2
+    fi
+    sleep 2
+done
 
 echo "== pacstrap (online; repos oficiales + [x])"
 pacstrap -K "$MNT" $PKGS
