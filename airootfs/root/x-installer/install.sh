@@ -32,6 +32,8 @@ LUKS_PASS="$(jget luks_password)"
 HYPR="$(jget hyprland)";              HYPR="${HYPR:-no}"
 
 [[ -n "$DISK" && -n "$HOST" && -n "$USER" ]] || { echo "installer: incomplete JSON" >&2; exit 1; }
+[[ "$HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9-]{0,62}$ ]] || { echo "installer: invalid hostname" >&2; exit 1; }
+[[ "$USER" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]] || { echo "installer: invalid username" >&2; exit 1; }
 
 if [[ "$DRY" == "1" ]]; then
     echo "install plan:"
@@ -49,16 +51,26 @@ fi
 [[ -b "$DISK" ]] || { echo "installer: $DISK is not a block device" >&2; exit 1; }
 
 partdev() {
-    local d="$1"
-    if [[ "$d" =~ [0-9]$ ]]; then
-        printf '%sp' "$d"
+    local name="${1##*/}"
+    if [[ "$name" =~ [0-9]$ ]]; then
+        printf '%sp' "$1"
     else
-        printf '%s' "$d"
+        printf '%s' "$1"
     fi
 }
 
 MNT=/mnt
-PKGLIST="${X_PKGLIST:-/run/archiso/packages.x86_64}"
+PKGLIST="${X_PKGLIST:-/root/x-installer/packages.x86_64}"
+
+cleanup() {
+    rm -f "$MNT/etc/sudoers.d/x-hypr-install" 2>/dev/null || true
+    umount -R "$MNT" 2>/dev/null || umount -Rl "$MNT" 2>/dev/null || true
+    if [[ -b /dev/mapper/xroot ]]; then
+        cryptsetup close xroot 2>/dev/null || true
+    fi
+    rm -f "${X_INSTALL_JSON:-/tmp/x-install.json}" 2>/dev/null || true
+}
+trap cleanup EXIT
 
 echo "== partitioning $DISK"
 sgdisk --zap-all "$DISK"
@@ -110,16 +122,19 @@ else
 fi
 
 echo "== waiting for network"
+NET_OK=0
 for i in $(seq 1 60); do
     if getent ahostsv4 geo.mirror.pkgbuild.com >/dev/null 2>&1; then
         echo "network available"
+        NET_OK=1
         break
-    fi
-    if [[ "$i" -eq 60 ]]; then
-        echo "warning: no network after 120s; pacstrap will fail" >&2
     fi
     sleep 2
 done
+if [[ "$NET_OK" -ne 1 ]]; then
+    echo "installer: no network after 120s; aborting" >&2
+    exit 1
+fi
 
 echo "== pacstrap (online; official repos + [x])"
 pacstrap -K "$MNT" $PKGS
@@ -142,6 +157,11 @@ arch-chroot "$MNT" bash -c "sed -i 's/^#$LOCALE/$LOCALE/' /etc/locale.gen && loc
 printf 'LANG=%s\n' "$LOCALE" > "$MNT/etc/locale.conf"
 printf 'KEYMAP=%s\n' "$KEYMAP" > "$MNT/etc/vconsole.conf"
 printf '%s\n' "$HOST" > "$MNT/etc/hostname"
+
+# Working mirrorlist for the installed system (pacman ships one commented out).
+if [[ -f /etc/pacman.d/mirrorlist ]]; then
+    cp /etc/pacman.d/mirrorlist "$MNT/etc/pacman.d/mirrorlist"
+fi
 
 # Make the [x] repo available on the installed system.
 if ! grep -q '^\[x\]' "$MNT/etc/pacman.conf"; then
@@ -187,9 +207,21 @@ fi
 CMDROOT="root=UUID=$(blkid -s UUID -o value "$ROOT_DEV") rw"
 [[ "$ENC" == "yes" ]] && CMDROOT="cryptdevice=UUID=$LUKS_UUID:xroot root=/dev/mapper/xroot rw"
 
+# Apply branding (os-release/GRUB hooks) BEFORE the bootloader step so a LUKS
+# cmdline written afterwards is not clobbered by x-release-apply.
+if [[ -x "$MNT/usr/bin/x-release-apply" ]]; then
+    arch-chroot "$MNT" /usr/bin/x-release-apply || true
+fi
+
 echo "== bootloader ($BOOT)"
 if [[ "$BOOT" == "systemd-boot" ]]; then
-    arch-chroot "$MNT" bootctl --esp-path=/boot --no-variables install >/dev/null
+    arch-chroot "$MNT" bootctl --esp-path=/boot install >/dev/null
+    # Ensure a removable fallback exists for firmware that only boots
+    # \EFI\BOOT\BOOTX64.EFI.
+    if [[ ! -f "$MNT/boot/EFI/BOOT/BOOTX64.EFI" ]]; then
+        mkdir -p "$MNT/boot/EFI/BOOT"
+        cp "$MNT/boot/EFI/systemd/systemd-bootx64.efi" "$MNT/boot/EFI/BOOT/BOOTX64.EFI"
+    fi
     mkdir -p "$MNT/boot/loader/entries"
     cat > "$MNT/boot/loader/loader.conf" <<'EOF'
 default x.conf
@@ -211,10 +243,5 @@ else
     arch-chroot "$MNT" grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
-if [[ -x "$MNT/usr/bin/x-release-apply" ]]; then
-    arch-chroot "$MNT" /usr/bin/x-release-apply || true
-fi
-
-umount -R "$MNT" 2>/dev/null || umount -Rl "$MNT" 2>/dev/null || true
 echo
 echo "installation complete. Reboot and remove the installation medium."

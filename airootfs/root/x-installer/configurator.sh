@@ -12,6 +12,7 @@ DRY="${X_DRY:-0}"
 
 valid_hostname() { [[ "$1" =~ ^[a-zA-Z0-9][a-zA-Z0-9-]{0,62}$ ]]; }
 valid_user() { [[ "$1" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; }
+valid_secret() { ! [[ "$1" =~ [\"\\] ]]; }
 
 # Disk list (block devices of type disk).
 mapfile -t DISKS < <(lsblk -dno NAME,SIZE,TYPE 2>/dev/null | awk '$3=="disk" {print "/dev/"$1" ("$2")"}')
@@ -70,7 +71,12 @@ PASS2="x"
 while [[ -z "$PASS" || "$PASS" != "$PASS2" ]]; do
     ask_password PASS "User password"
     ask_password PASS2 "Repeat the password"
-    [[ -n "$PASS" && "$PASS" == "$PASS2" ]] || echo "passwords do not match or are empty"
+    if ! valid_secret "$PASS"; then
+        echo "password cannot contain \" or \\"
+        PASS=""; PASS2="x"
+    elif [[ -n "$PASS" && "$PASS" != "$PASS2" ]]; then
+        echo "passwords do not match"
+    fi
 done
 
 # Package profile.
@@ -94,7 +100,12 @@ if confirm_yes "Encrypt the root filesystem (LUKS)?" n; then
         while [[ -z "$LUKS_PASS" || "$LUKS_PASS" != "$LUKS2" ]]; do
             ask_password LUKS_PASS "LUKS passphrase"
             ask_password LUKS2 "Repeat the LUKS passphrase"
-            [[ -n "$LUKS_PASS" && "$LUKS_PASS" == "$LUKS2" ]] || echo "passphrases do not match or are empty"
+            if ! valid_secret "$LUKS_PASS"; then
+                echo "passphrase cannot contain \" or \\"
+                LUKS_PASS=""; LUKS2="x"
+            elif [[ -n "$LUKS_PASS" && "$LUKS_PASS" != "$LUKS2" ]]; then
+                echo "passphrases do not match"
+            fi
         done
     fi
 else
@@ -119,4 +130,5 @@ fi
 cat > "$OUT" <<EOF
 {"disk":"$DISK","hostname":"$HOST","username":"$USER","password":"$PASS","language":"$LANG_CODE","locale":"$LOCALE","keyboard":"$KEYMAP","timezone":"$TIMEZONE","profile":"$PROFILE","bootloader":"$BOOT","encryption":"$ENC","luks_password":"$LUKS_PASS","hyprland":"$HYPR"}
 EOF
+chmod 600 "$OUT"
 echo "configuration written to $OUT"
