@@ -205,6 +205,6 @@ if [[ -x "$MNT/usr/bin/x-release-apply" ]]; then
     arch-chroot "$MNT" /usr/bin/x-release-apply || true
 fi
 
-umount -R "$MNT"
+umount -R "$MNT" 2>/dev/null || umount -Rl "$MNT" 2>/dev/null || true
 echo
 echo "installation complete. Reboot and remove the installation medium."
