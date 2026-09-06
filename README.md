@@ -128,3 +128,5 @@
  <a href="https://github.com/xscriptor">X Github Profile</a>
 
 </div>
+
+- Documentation: https://github.com/xlnux/wiki
