@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Shortcut to run the X text installer from the live environment.
+exec bash /root/x-installer/installer.sh "$@"
