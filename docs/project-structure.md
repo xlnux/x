@@ -5,7 +5,7 @@ This document describes the repository composition and the role of key files and
 ## Top-Level Layout
 
 ```text
-x-linux/
+x/
 ├── airootfs/                  # Root filesystem overlay copied into the image/rootfs
 ├── efiboot/                   # systemd-boot assets and entries
 ├── grub/                      # GRUB configuration files

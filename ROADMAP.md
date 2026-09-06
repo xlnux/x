@@ -75,7 +75,7 @@ cd x-packages
 ./build-repo.sh
 
 # Build the ISO
-cd /path/to/x-linux
+cd /path/to/x
 ./xbuild.sh
 
 # Build a WSL tarball
