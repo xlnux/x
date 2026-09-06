@@ -97,7 +97,7 @@ mount "$EFI" "$MNT/boot"
 # Package set per profile.
 EXTRA="base base-devel linux linux-firmware sudo networkmanager openssh git jq x-release"
 # Terminal and audio stack are always installed (work without the Hyprland setup).
-EXTRA="$EXTRA kitty pipewire pipewire-pulse pipewire-alsa wireplumber alsa-utils"
+EXTRA="$EXTRA kitty pipewire pipewire-pulse pipewire-alsa wireplumber alsa-utils sddm"
 [[ "$BOOT" == "grub" ]] && EXTRA="$EXTRA grub efibootmgr"
 [[ "$ENC" == "yes" ]] && EXTRA="$EXTRA cryptsetup"
 if [[ "$PROFILE" == "core" ]]; then
@@ -166,10 +166,10 @@ arch-chroot "$MNT" runuser -u "$USER" -- env X_HYPRLAND=0 X_HW_AUTO=0 /usr/bin/x
 arch-chroot "$MNT" systemctl --global enable pipewire pipewire-pulse wireplumber >/dev/null 2>&1 || true
 
 if [[ "$HYPR" == "yes" ]]; then
-    echo "== installing Hyprland setup (external, network)"
+    echo "== installing Hyprland setup (own tool + external configs)"
     set +e
-    arch-chroot "$MNT" runuser -u "$USER" -- env X_HYPRLAND=1 X_HW_AUTO=0 /usr/bin/x setup --user
-    echo "warning: hyprland setup exited with $?"
+    arch-chroot "$MNT" env X_HYPR_USER="$USER" /usr/share/x/tools/hyprland-install.sh
+    echo "hyprland setup exited with $?"
     set -e
 fi
 
