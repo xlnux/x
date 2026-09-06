@@ -33,7 +33,7 @@ ask_password() {
 select_one() {
     local var="$1" prompt="$2"
     shift 2
-    local items=("$@") value
+    local items=("$@") value=""
     if have_gum; then
         value="$(printf '%s\n' "${items[@]}" | gum choose --header "$prompt")" || value=""
     else
@@ -54,12 +54,20 @@ select_one() {
 
 confirm_yes() {
     local prompt="$1" default="${2:-n}"
+    local dflag
     if have_gum; then
-        gum confirm --default=false "$prompt"
+        [[ "$default" == "y" ]] && dflag="--default=true" || dflag="--default=false"
+        gum confirm $dflag "$prompt"
     else
-        local resp
-        printf '%s [s/N]: ' "$prompt"
+        local resp label
+        if [[ "$default" == "y" ]]; then
+            label="S/n"
+        else
+            label="s/N"
+        fi
+        printf '%s [%s]: ' "$prompt" "$label"
         IFS= read -r resp
+        resp="${resp:-$default}"
         [[ "$resp" =~ ^[sSyY] ]]
     fi
 }
