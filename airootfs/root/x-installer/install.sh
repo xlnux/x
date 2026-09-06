@@ -141,6 +141,16 @@ printf 'LANG=%s\n' "$LOCALE" > "$MNT/etc/locale.conf"
 printf 'KEYMAP=%s\n' "$KEYMAP" > "$MNT/etc/vconsole.conf"
 printf '%s\n' "$HOST" > "$MNT/etc/hostname"
 
+# Make the [x] repo available on the installed system.
+if ! grep -q '^\[x\]' "$MNT/etc/pacman.conf"; then
+    cat >> "$MNT/etc/pacman.conf" <<'EOF'
+
+[x]
+SigLevel = Optional TrustAll
+Server = https://xlnux.github.io/x-repo/repo/x86_64
+EOF
+fi
+
 echo "== user"
 arch-chroot "$MNT" useradd -m -G wheel -s /bin/bash "$USER"
 printf '%s:%s\n' "$USER" "$PASS" | arch-chroot "$MNT" chpasswd
