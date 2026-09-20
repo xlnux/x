@@ -9,7 +9,8 @@ en el `ROADMAP.md` de la raiz del workspace (x-lnux).
   bootloader GRUB o systemd-boot, cifrado LUKS, locale/teclado/zona horaria,
   Hyprland en la instalacion).
 - Autoinstalacion desatendida (cidata + `xauto=1`); atajo `xinstall`.
-- Payload offline (`x-scripts`) con configs de hyprland/kitty/nvim empaquetadas.
+- Payload offline (`x-scripts`) con el snapshot del escritorio equisdots
+  (hyprland/shell/paletas/motores) + kitty/starship/nvim empaquetados.
 - Red y mirrorlist operativos en el sistema instalado; branding `xlnux/x`.
 - Trabajo de la iniciativa reboot integrado en `main`.
 

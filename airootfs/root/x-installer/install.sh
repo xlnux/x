@@ -186,7 +186,7 @@ arch-chroot "$MNT" runuser -u "$USER" -- env X_HYPRLAND=0 X_HW_AUTO=0 /usr/bin/x
 arch-chroot "$MNT" systemctl --global enable pipewire pipewire-pulse wireplumber >/dev/null 2>&1 || true
 
 if [[ "$HYPR" == "yes" ]]; then
-    echo "== installing Hyprland setup (as user, with temporary passwordless sudo)"
+    echo "== installing the Hyprland/equisdots desktop (as user, with temporary passwordless sudo)"
     cat > "$MNT/etc/sudoers.d/x-hypr-install" <<'EOF'
 %wheel ALL=(ALL) NOPASSWD: ALL
 EOF

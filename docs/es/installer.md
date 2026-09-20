@@ -146,11 +146,12 @@ están.
 11. **Setup de Hyprland** (solo si `hyprland=yes`): se crea un drop-in
     temporal de sudo sin password y se ejecuta
     `/usr/share/x/tools/hyprland-install.sh` como el usuario destino. El
-    drop-in se elimina después. La herramienta prefiere la instantánea de
-    configuración offline incluida en el paquete (`/usr/share/x/config`); solo
-    clona el repositorio externo `xscriptor-colors/hyprland` (rama `main`)
-    como fallback y nunca configura NVIDIA (eso lo gestiona la fase de
-    hardware del sistema).
+    drop-in se elimina después. La herramienta prefiere la instantánea offline
+    del stack equisdots incluida en el paquete
+    (`/usr/share/x/config/equisdots`); solo clona el instalador oficial
+    `equisdots/dots` como fallback online. NVIDIA lo gestiona la fase de
+    hardware del sistema; la herramienta recurre al setup NVIDIA de equisdots
+    únicamente si hay GPU y ningún driver instalado.
 12. **Initramfs (solo LUKS)**: sustituir `HOOKS` en `mkinitcpio.conf` para
     incluir el hook `encrypt` y reconstruir con `mkinitcpio -P`.
 13. **Branding**: `x-release-apply` (del paquete `x-release`) se ejecuta

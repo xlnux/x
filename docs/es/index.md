@@ -47,7 +47,7 @@ los repos se renombraron en su momento, por lo que las referencias antiguas a
 | `xlnux/x-repo` | Repositorio binario de paquetes de X (alojado en GitHub Pages, `[x]` en `pacman.conf`) y el portal de paquetes. |
 | `xlnux/xpm` | Gestor de paquetes de X (Rust). |
 | `xlnux/xpkg` | Herramienta de empaquetado de X para desarrolladores (Rust). |
-| `xscriptor-colors/hyprland` | Fuente externa de la configuración de Hyprland/kitty/nvim, consumida de solo lectura por la herramienta de instalación de Hyprland en `scripts`. |
+| `equisdots/*` | Org dueña del stack de escritorio (config Lua de Hyprland, shell Quickshell, paletas, motores, login SDDM) consumido de solo lectura por la herramienta de instalación de Hyprland en `scripts`; su instalador oficial es `equisdots/dots`. |
 
 Documentación relacionada en este repositorio:
 
