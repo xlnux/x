@@ -13,6 +13,25 @@ DISK=/home/x0z/x-vm.qcow2
 Ajusta `ISO` al artefacto producido por `xbuild.sh` (consulta
 [Construir el ISO](building.md)); `out/` puede contener más de un ISO.
 
+## Script launcher (recomendado)
+
+`vm.sh` envuelve los comandos de abajo desde la terminal: busca el ISO más
+reciente en `out/`, crea el disco en el primer uso, usa KVM cuando `/dev/kvm`
+está disponible y gestiona BIOS/UEFI, el reenvío SSH y el disco seed de
+`xauto`.
+
+```bash
+./vm.sh --deps                 # una vez: instala archiso + qemu-desktop + OVMF
+./vm.sh --build                # construye el ISO (sudo ./xbuild.sh) y lo arranca
+./vm.sh --uefi --boot disk     # arranca un disco UEFI ya instalado
+./vm.sh --ssh-port 2222        # ISO en vivo con ssh -p 2222 user@localhost
+./vm.sh --print                # muestra el comando QEMU resultante
+```
+
+`--help` lista todas las opciones (`--iso`, `--disk`, `--ram`, `--cpus`,
+`--no-kvm`, `--display`, `--seed`, `--seed-json`). Los comandos manuales de
+abajo siguen siendo la referencia.
+
 ## Crear un disco de destino (primera vez)
 
 ```bash
